@@ -1,0 +1,102 @@
+\documentclass{name}
+
+\usepackage{lipsum}
+\usepackage{multicol}
+\usepackage{listings}
+\usepackage{longtable}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{caption}
+\usepackage{setspace}
+\usepackage{stmaryrd}
+\usepackage[backend=bibtex,sorting=none]{biblatex}
+\addbibresource{bibliographie.bib}
+\usepackage{csquotes}
+\usepackage{lmodern}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{awesomebox}
+\setlength{\marginparwidth}{2cm}
+\usepackage{todonotes}
+\usepackage{upquote}
+
+\newtheorem{theorem}{Théorème}
+\newtheorem{remark}{Remarque}
+\newtheorem{definition}{Définition}
+
+\begin{document}
+
+%----------- Informations du rapport ---------
+
+\UE{High-Dimensional Data \& Deep Learning}
+\sujet{Sujet IMG1}
+\titre{What makes a neural network robust to corrupted images?}
+\eleves{Marin \textsc{}\\Matthias \textsc{}\\Mehdi \textsc{}}
+\enseignant{Juliette \textsc{Chevallier}\\Valentin \textsc{Mercier}\\Joseba \textsc{Dalmau}}
+\dateRapport{Année 2026-2027}
+
+%----------- Initialisation -------------------
+        
+\hypersetup{pageanchor=false}
+\fairemarges
+\fairepagedegarde
+\hypersetup{pageanchor=true}
+
+\newpage
+\pagenumbering{roman}
+
+\begin{center}
+	\begin{minipage}{13cm}
+	    \begin{center}
+	        \section*{Abstract}
+	    \end{center}
+		Ce rapport présente nos résultats et analyses concernant le TP 2 qui porte sur la segmentation d'images.
+	\end{minipage}
+\end{center}
+
+\newpage
+\tableofcontents
+
+\newpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\section{Partie I : Réponses aux questions préliminaires}
+
+\subsection{How many layers do we have in the network? What are the activation functions?}
+Dans le réseau de base il y a 3 couches cachées (trois Conv2D) qui utilisent toutes la fonction d'activation ReLU. La couche de sortie utilise une activation sigmoïde. En comptant la couche d'entrée, le réseau a au total 5 couches.
+
+\subsection{Explain why we have a \texttt{sigmoid} activation at the end of the network? Write the training optimization problem.}
+La fonction sigmoïde est utilisée à la fin du réseau car elle permet de produire des sorties sous forme de probabilités, entre 0 et 1, ce qui est idéal pour les tâches de segmentation binaire où chaque pixel doit être classé comme appartenant à une classe ou non. 
+
+L'optimisation de l'entraînement vise à minimiser la fonction de perte du modèle entre les prédictions du modèle et les étiquettes réelles. Le problème d'optimisation peut être formulé comme suit :
+
+\subsection{Verify your model output shape? The link with the input shape?}
+TODO
+
+\subsection{Explanation of the training algorithm}
+TODO
+
+\subsection{Loss function used}
+Dans le projet, on utilise comme loss fonction la MSE. 
+Cependant puisque nous sommes dans le cadre d'une classification binaire, il serait plus approprié d'utiliser la Binary Cross-Entropy (BCE) comme fonction de perte.
+La BCE est mieux adaptée aux tâches de classification binaire car elle mesure la différence entre les distributions de probabilité des prédictions du modèle et des étiquettes réelles, ce qui permet une meilleure optimisation du modèle pour ce type de problème.
+
+\section{Partie II : Tests et résultats}
+
+\subsection{Introduction}
+Afin de pouvoir tester une grande variété d'hyperparamètres et d'architectures différentes, nous avons développé un petit framework qui permet de benchmark différentes architectures et modèles entre eux efficacement. Tout le code utilisé pour réaliser nos tests est disponible sur notre dépôt GitHub au lien donné.
+
+Nous avons décidé d'utiliser la BCE plutôt que la MSE pour réaliser nos tests.
+
+\subsubsection{Architectures testées}
+En plus de l'architecture du CNN à 3 Layers proposés dans le sujet, nous avons aussi implémenté le réseau UNET qui a été expliqué en séance de TP.
+Nous avons aussi abstractisé le CNN à 3 Layers en une classe générique qui permet de créer des CNN avec un nombre variable de couches cachées.
+Notre objectif était de pouvoir tester l'impact du nombre de couches cachées sur les performances du modèle et sur l'entraînement.
+
+\subsection{Influence du learning rate}
+
+\end{document}

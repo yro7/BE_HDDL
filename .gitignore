@@ -1,0 +1,20 @@
+# LaTeX
+*.aux
+*.bbl
+*.blg
+*.bcf
+*.run.xml
+*-blx.bib
+*.log
+*.out
+*.toc
+*.nlo
+*.pdf
+!Executive_Summary.pdf
+
+# Archive
+*.zip
+
+# OS & Python
+.DS_Store
+__pycache__/
