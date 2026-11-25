@@ -4,7 +4,6 @@ Livrables:
 1. Dépôt Git
 
     Le dépôt doit permettre à un tiers de comprendre le projet, de relancer l'expérience principale et de retrouver les résultats présentés.
-    Vous devez rendre un lien vers un dépôt Git avant le 19-11-2026 à 11h30.
     Vous avez le droit d'apporter des modifications au dépôt jusqu'au 07-12-2026, 12h.
     Seule la branche main du dépôt sera prise en compte pour l'évaluation.
 
