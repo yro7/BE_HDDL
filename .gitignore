@@ -18,3 +18,11 @@
 # OS & Python
 .DS_Store
 __pycache__/
+
+# Poids, caches et checkpoints (voir scripts/env.sh)
+.scratch/
+.venv/
+*.safetensors
+*.ckpt
+*.pt
+*.pth
