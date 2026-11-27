@@ -26,3 +26,15 @@ __pycache__/
 *.ckpt
 *.pt
 *.pth
+
+# Sorties du pilote
+results/exp_0_pilote/
+
+# Code du pilote, remplacé par src/lejepa_kit/ (on ne garde que le rapport)
+src/*
+!src/lejepa_kit/
+experiments/exp_0_pilote/*
+!experiments/exp_0_pilote/README.md
+
+# Misc
+PROTOCOLE.md
