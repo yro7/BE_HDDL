@@ -72,3 +72,55 @@ Ajout au protocole StoP :
 4. I-JEPA + bruit sur les positions + loss de cohérence (version N-JEPA)
 
 Même budget, plusieurs seeds, évaluation sur CIFAR-10-C en robustesse effective. Ça permet de séparer trois facteurs : "il y a du bruit", "la covariance est apprise", "on impose l'invariance". C'est plus intéressant que de reproduire N-JEPA tel quel, et ça répond mieux à *what makes...*.
+
+
+# PhiJEPA : prédire une vue corrompue puis la "débruiter" vers la vue propre (le plus proche de notre sujet)
+
+Papier : Yamada, Tsai (2026), *PhiJEPA: Denoising Latent Predictions for Visual Representation Learning*, [arXiv:2611.27516](https://arxiv.org/abs/2611.27516). Preprint du 20/11/2026, pas de code publié.
+
+## Idée clé
+
+Contrairement à StoP et N-JEPA, ici la corruption est **sur les pixels** : color jitter, grayscale, flou gaussien, solarisation, bruit gaussien additif.
+
+La prédiction se fait en deux étages (analogie hippocampe CA3 → CA1, reprise de PhiNet) :
+1. L'étudiant voit le contexte d'une vue corrompue $\tilde x_1 = a_1(x)$. Un bloc Transformer $h$ prédit les tokens cibles du teacher EMA calculés sur une **autre** vue corrompue indépendamment, $\tilde x_2 = a_2(x)$.
+2. Un MLP token par token $g$ (sans attention) transforme cette prédiction pour retrouver les tokens du teacher sur l'image **propre** $x$.
+
+$$\mathcal{L} = \frac{1}{|T|}\sum_t \Big[ d\big(\tilde z_t, \mathrm{sg}(\tilde y_t)\big) + \lambda\, d\big(g(\tilde z_t), \mathrm{sg}(y_t)\big) \Big], \quad d(u,v) = 2 - 2\cos(u,v), \ \lambda = 0.5$$
+
+Le "débruitage" est donc l'étage $g$ : corrompu → propre dans l'espace latent. Il n'y a pas de bruit ajouté dans les latents et pas de diffusion.
+
+Leur explication : comme les deux vues sont corrompues indépendamment, le modèle ne peut prédire que ce qu'elles ont en commun, c'est-à-dire le contenu et pas la corruption. L'étage $g$ ajoute ensuite une référence propre qui façonne aussi la représentation.
+
+## Résultats
+
+- ViT-B/16, ImageNet-1k, 400 epochs, comparé à leur "Simple I-JEPA" au même nombre d'epochs.
+- Segmentation VOC : 66.2 → 69.3 mIoU. ADE20K : 29.2 → 30.7. Linear probe ImageNet : pareil (72.1 vs 72.0).
+- **Robustesse** : accuracy moyenne sur bruit gaussien, flou, JPEG, contraste et luminosité (sévérité 3) de 54.3 % à 64.9 %. Par contre, sur les occultations, ils baissent : 50.9 % → 47.1 %.
+- Ablation (une seed) : corrompre l'étudiant seul ne sert à rien (65.4 / 65.9 en VOC). C'est la combinaison cible corrompue indépendante + étage $g$ qui apporte le gain (69.2).
+
+## Avis critique
+
+- **C'est le papier le plus en lien avec notre question**, parce qu'il touche vraiment aux images corrompues et qu'il mesure (un peu) la robustesse.
+- **Gros problème de contrôle** : les corruptions d'entraînement (bruit gaussien, flou) sont presque les mêmes que celles du test. Le gain 54 % → 65 % peut venir juste du fait d'avoir vu ces corruptions pendant l'entraînement. Il manque la baseline évidente : Simple I-JEPA entraîné avec **les mêmes augmentations** mais sans l'étage $g$. L'ablation (b) s'en rapproche, mais elle n'est évaluée qu'en segmentation propre, pas en robustesse.
+- Une seule run de pré-entraînement par configuration. Écarts de 1 à 3 pts sans barre d'erreur, alors que leur propre sweep de $p$ / $\lambda$ varie déjà de 68.0 à 69.9 en VOC.
+- Hyperparamètres choisis sur les évaluations rapportées. PhiJEPA coûte environ 56 % de FLOPs en plus que Simple I-JEPA (deux passes du teacher).
+- Pas d'ImageNet-C : leurs propres corruptions, une seule sévérité. Pas d'adversarial.
+- L'abstract met en avant le meilleur cas (planning PushT 33 % → 65 % avec un flou dans la plage vue à l'entraînement). Avec un flou plus fort, iBOT fait mieux.
+- Les auteurs sont honnêtes sur les limites ("do not establish superiority under matched compute", pas de robustesse générale aux occultations).
+
+## Ce qu'on peut en tirer pour le BE
+
+Ça s'emboîte directement avec l'**expérience 1** (bruit gaussien pendant l'entraînement du backbone). PhiJEPA permet de découper la question "qu'est-ce qui rend robuste ?" en facteurs, et de tester le contrôle qu'ils n'ont pas fait :
+
+1. I-JEPA, images propres (baseline)
+2. I-JEPA, étudiant **et** teacher sur la même image bruitée (= notre exp 1 "dataset bruité")
+3. I-JEPA, étudiant bruité, cible propre (ablation b)
+4. I-JEPA, étudiant bruité, cible bruitée indépendamment (ablation c)
+5. PhiJEPA complet (cible bruitée indépendante + étage $g$ vers la cible propre)
+
+Évaluation sur CIFAR-10-C, en séparant les corruptions **vues** à l'entraînement (bruit gaussien) et **non vues** (brouillard, contraste, pixelisation, JPEG...), avec plusieurs seeds et en robustesse effective.
+
+Question falsifiable : est-ce que l'étage de débruitage $g$ apporte de la robustesse **au-delà** de la simple augmentation par le bruit (2 vs 5), et est-ce que ça se généralise aux corruptions non vues ? Si le gain disparaît sur les corruptions non vues, alors ce qui rend robuste, c'est d'avoir vu la corruption, pas l'architecture.
+
+Lien avec les idées précédentes : StoP / N-JEPA bruitent les **positions**, PhiJEPA bruite les **pixels**. Comparer les deux familles sur CIFAR-10-C permettrait de dire quel type de bruit à l'entraînement compte vraiment pour la robustesse aux corruptions.
