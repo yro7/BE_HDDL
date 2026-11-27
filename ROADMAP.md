@@ -7,9 +7,10 @@
 
 0) baseline
 Trois cas :
-a) bruit sur les encoders
-b) bruit sur les decoders
-c) bruit joint sur les deux
+a) bruit lors de l'entraînement du backbone
+b) bruit lors de l'entraînement de la head
+c) bruit joint lors des deux
+
 
 puis: mesure des performances et analyse du comportement
 
@@ -17,9 +18,9 @@ puis: mesure des performances et analyse du comportement
 
 0) baseline
 Trois cas :
-a) bruit sur les encoders
-b) bruit sur les decoders
-c) bruit joint sur les deux
+a) bruit lors de l'entraînement du backbone
+b) bruit lors de l'entraînement de la head
+c) bruit joint lors des deux
 
 ## 3. Analyse de sensibilité + remédiation
 
