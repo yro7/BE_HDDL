@@ -124,3 +124,38 @@ Leur explication : comme les deux vues sont corrompues indépendamment, le modè
 Question falsifiable : est-ce que l'étage de débruitage $g$ apporte de la robustesse **au-delà** de la simple augmentation par le bruit (2 vs 5), et est-ce que ça se généralise aux corruptions non vues ? Si le gain disparaît sur les corruptions non vues, alors ce qui rend robuste, c'est d'avoir vu la corruption, pas l'architecture.
 
 Lien avec les idées précédentes : StoP / N-JEPA bruitent les **positions**, PhiJEPA bruite les **pixels**. Comparer les deux familles sur CIFAR-10-C permettrait de dire quel type de bruit à l'entraînement compte vraiment pour la robustesse aux corruptions.
+
+
+# Benchmark et dataset : CIFAR-10-C (Hendrycks & Dietterich)
+
+Papier proposé : *Benchmarking Neural Network Robustness to Common Corruptions and Surface Variations*, [arXiv:1807.01697](https://arxiv.org/abs/1807.01697).
+
+**Attention : c'est la version brouillon.** Sur arXiv elle est marquée "Superseded by arXiv:1903.12261". La version publiée (ICLR 2019) est *Benchmarking Neural Network Robustness to Common Corruptions and Perturbations*, [arXiv:1903.12261](https://arxiv.org/abs/1903.12261), qu'on cite déjà dans le README de l'exp 1. Dans le rapport, il faut citer **1903.12261**. La partie "surface variations" / Icons-50 de la v1 a été remplacée par ImageNet-P et ne nous sert pas.
+
+## Ce qu'on reprend
+
+- **Les 15 corruptions**, en 4 familles, avec 5 sévérités chacune :
+  - bruit : gaussian, shot, impulse
+  - flou : defocus, glass, motion, zoom
+  - météo : snow, frost, fog, brightness
+  - numérique : contrast, elastic, pixelate, JPEG
+- Plus 4 corruptions "de validation" (speckle noise, gaussian blur, spatter, saturate), à garder pour tester des corruptions **jamais utilisées** pour régler quoi que ce soit.
+- **Dataset** : CIFAR-10-C, https://zenodo.org/record/2535967 (licence CC BY 4.0, environ 2.9 Go). Un `.npy` par corruption contient les 10 000 images de test pour chaque sévérité, de la sévérité 1 à 5, plus un `labels.npy`. On n'a rien à générer nous-mêmes, donc pas de risque d'implémentation différente. À télécharger dans `$HDDL_CACHE` (cf. `scripts/env.sh`), pas dans le dépôt.
+- **Métriques** : pour un modèle $f$ et une corruption $c$, avec $E_{s,c}$ l'erreur à la sévérité $s$,
+
+$$CE_c^f = \frac{\sum_{s=1}^{5} E^f_{s,c}}{\sum_{s=1}^{5} E^{\text{ref}}_{s,c}}, \qquad \text{Relative } CE_c^f = \frac{\sum_{s=1}^{5}\left(E^f_{s,c} - E^f_{\text{clean}}\right)}{\sum_{s=1}^{5}\left(E^{\text{ref}}_{s,c} - E^{\text{ref}}_{\text{clean}}\right)}$$
+
+  Le mCE et le Relative mCE sont les moyennes sur les 15 corruptions.
+
+## Adaptations nécessaires
+
+- Dans le papier, la référence est AlexNet sur ImageNet, ce qui n'a pas de sens pour nous. **On normalise par notre baseline**, l'I-JEPA entraîné sur images propres : un mCE < 100 veut dire "plus robuste que la baseline".
+- Le **Relative mCE** est la métrique qui compte pour *what makes...* : il mesure la **dégradation** par rapport à l'accuracy propre, pas juste l'accuracy brute. Leur conclusion principale va dans ce sens : "robustness improvements are mostly explained by accuracy improvements", c'est-à-dire que d'AlexNet à ResNet la robustesse relative n'a presque pas bougé. C'est le même argument que la robustesse effective de Taori 2020.
+- On sépare les résultats par famille. Chez PhiJEPA et dans notre exp 1, le bruit gaussien est vu à l'entraînement, donc le score sur la famille "bruit" n'est pas comparable au reste. Il faut rapporter à part : corruptions **vues**, corruptions **non vues** des 15, et les 4 de validation.
+- Courbes accuracy en fonction de la sévérité (1 à 5) par famille, en plus du mCE, pour voir **où** chaque méthode décroche.
+
+## Résultats du papier utiles pour l'argumentation
+
+- Débruiter l'image en **pré-traitement** (non-local means) **dégrade** le mCE (76.7 → 82.1 sur ResNet-50). C'est un bon contrepoint pour PhiJEPA, qui débruite dans l'**espace latent** : est-ce que ça marche mieux que débruiter les pixels ?
+- Les modèles plus gros ou multi-échelles ont un meilleur mCE, mais surtout parce qu'ils sont meilleurs en général. Il faut donc comparer à capacité égale (même ViT pour toutes nos variantes).
+- La "stability training" (forcer des sorties stables sous bruit) n'a pas aidé sur ImageNet-C. C'est intéressant face à la loss de cohérence de N-JEPA, qui fait la même chose dans l'espace latent.
