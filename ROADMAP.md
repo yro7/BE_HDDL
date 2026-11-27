@@ -1,7 +1,7 @@
 # Roadmap
 
 
-## Sujet: qu'est-ce qui rend un modèle JEPA (images) robuste au bruit ?
+## Sujet: qu'est-ce qui rend un modèle I-JEPA (images) robuste au bruit ?
 
 ## 1. Bruit Gaussien
 

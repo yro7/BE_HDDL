@@ -6,14 +6,14 @@ Idée:
 Prendre l'exemple de https://arxiv.org/pdf/1903.12261
 (Benchmarking Neural Network Robustness to Common Corruptions and Perturbations)
 
-Entraîner un JEPA from scratch avec un dataset donné sain.
+Entraîner un I-JEPA from scratch avec un dataset donné sain.
 puis comparer (même seed etc) Sain VS dataset bruité.
 
 Résultats attendus: 
 
-- comparaison des performances finales des 2 JEPA 
+- comparaison des performances finales des 2 I-JEPA 
 
-- visualisation des représentations internes des 2 JEPA (cf https://arxiv.org/pdf/2505.12477) "(Figure 2: Injecting corruption-aligned noise into data augmentation improves SSL representa-
+- visualisation des représentations internes des 2 I-JEPA (cf https://arxiv.org/pdf/2505.12477) "(Figure 2: Injecting corruption-aligned noise into data augmentation improves SSL representa-
 tion quality on corrupted CIFAR-10. Thus aligning augmentations with the irrelevant
 components in the data is crucial in SSL. t-SNE [58] visualizations of (left to right):
 (1) Supervised features (penultimate layer), clean data. (2) Supervised features (penultimate
