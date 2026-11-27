@@ -9,7 +9,7 @@ IDEAS.md
 # StoP : bruit sur les positions
 [arXiv:2308.00566](https://arxiv.org/abs/2308.00566) · code : https://github.com/amirbar/StoP
 
-- **Idée** : dans I-JEPA, bruit gaussien sur les positional embeddings des tokens masqués (dans le prédicteur, pas sur l'image).
+- **Idée** : dans LeJEPA, bruit gaussien sur les positional embeddings des tokens masqués (dans le prédicteur, pas sur l'image).
 - **Résultat** : +1.7 pt en linear probe. Pas de test sur des images corrompues.
 - **Pour nous** : tester si ça rend aussi robuste aux corruptions (CIFAR-10-C).
 
@@ -32,12 +32,12 @@ IDEAS.md
 [arXiv:1903.12261](https://arxiv.org/abs/1903.12261) (version publiée de 1807.01697) · données : https://zenodo.org/record/2535967
 
 - 15 corruptions × 5 sévérités, plus 4 corruptions de validation.
-- Métriques : mCE et Relative mCE, normalisés par notre baseline I-JEPA propre.
+- Métriques : mCE et Relative mCE, normalisés par notre baseline LeJEPA propre.
 - Le papier conclut que la robustesse vient surtout d'une meilleure accuracy, donc il faut regarder le Relative mCE.
 
 # Plan d'expérience
 Même ViT, plusieurs seeds, évaluation sur CIFAR-10-C :
-1. I-JEPA propre (baseline)
-2. I-JEPA bruité (exp 1)
+1. LeJEPA propre (baseline)
+2. LeJEPA bruité (exp 1)
 3. PhiJEPA
 4. StoP (avec ou sans loss de cohérence)
