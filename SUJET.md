@@ -1,6 +1,6 @@
 Subject : IMG1 : What makes a neural network robust to corrupted images?
 
-Scope: "Sujet: qu'est-ce qui rend un modèle I-JEPA (images) robuste au bruit ?"
+Scope: "Sujet: qu'est-ce qui rend un modèle LeJEPA (images) robuste au bruit ?"
 
 
 Groupe:

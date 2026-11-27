@@ -1,7 +1,7 @@
 IDEAS.md
 
-# I-JEPA : Immunité sur label flipping
- L'entraînement initial (pré-entraînement) d'un I-JEPA strictement auto-supervisé (sans étiquettes humaines).
+# LeJEPA : Immunité sur label flipping
+ L'entraînement initial (pré-entraînement) d'un LeJEPA strictement auto-supervisé (sans étiquettes humaines).
  Conséquence : Les attaques classiques par inversion d'étiquettes (label flipping) sont totalement inopérantes lors du pré-entraînement. 
  
  ⟶ L'attaquant doit agir directement sur la structure physique ou sémantique des données brutes (images, vidéos).   
